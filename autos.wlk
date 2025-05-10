@@ -1,34 +1,5 @@
-object dominic {
-    const autos = []
-
-    method comprar(unAuto) {autos.add(unAuto)}
-    method autosNoEnCondiciones() = autos.filter({auto => !auto.enCondiciones()})
-    method autosEnCondiciones() = autos.filter({auto => auto.enCondiciones()})
-    method mandarAutosAlTaller() {
-        taller.recibirAutos(self.autosNoEnCondiciones())
-    }
-    method realizarPruebasDeVelocidad() {
-        autos.forEach({auto => auto.hacerPrueba()})
-    }
-    method venderAutos() {
-        autos.clear()
-    }
-    method promedioVelocidades() = autos.sum({auto => auto.velocidadMaxima()}) / autos.size()
-    method masRapido() = autos.autosEnCondiciones().max({auto => auto.velocidadMaxima()})
-    method hayUnAutoMuyRapido() = self.masRapido().velocidadMaxima() > 2 * self.promedioVelocidades()
-}
-
-object taller {
-    const autosAReparar = []
-
-    method recibirAutos(listaDeAutos) {
-        autosAReparar.addAll(listaDeAutos)
-    }
-    method reparaAutos() {
-        autosAReparar.forEach({auto => auto.reparar()})
-        autosAReparar.clear()
-    }
-}
+import combustibles.*
+import colores.*
 
 object ferrari {
     var motor = 87
@@ -64,31 +35,24 @@ object intocable {
     method velocidadMaxima() = 45
 }
 
+object torrente {
+    var motor = 75
+    var property combustible = gasolina
+    var cantidadLitrosCombustible = 80
+    var color = azul
+    var estaActivadoTurbo = false
 
-object gasolina {
-    method nivelMinimo() = 85
-    method calculoAdicional(litros) = 10
+    method enCondiciones() = 
+        cantidadLitrosCombustible >= combustible.nivelMinimo()
+        &&
+        estaActivadoTurbo
+    method reparar() {
+        cantidadLitrosCombustible = (cantidadLitrosCombustible + 50).min(100)
+        color = color.cambiarDeColor()
+        estaActivadoTurbo = true
+    }
+    method hacerPrueba() {cantidadLitrosCombustible = (cantidadLitrosCombustible - 15).max(0) motor = (motor - (motor * 0.10)).max(0)}
+    method velocidadMaxima() = 90 + combustible.calculoAdicional() + if (estaActivadoTurbo) 20 else 0
 }
 
-object nafta {
-    method nivelMinimo() = 50
-    method calculoAdicional() = 10
-    method calculoAdicional(litros) = -1 * (litros * 2) * 0.10
-}
 
-object nitrogeno {
-    method nivelMinimo() = 0
-    method calculoAdicional(litros) = (litros * 2) * 10
-}
-
-object azul {
-    method cambiarDeColor() = verde
-}
-
-object rojo {
-    method cambiarDeColor() = azul
-}
-
-object verde {
-      method cambiarDeColor() = rojo
-}
